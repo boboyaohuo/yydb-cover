@@ -1,7 +1,7 @@
 <template>
 <div class="content" style="padding-bottom:50px;">
   <div class="jiexiaoList" v-for="x in listing" v-link="{name:'details', params:{number:x.number,from:from}}" style="display:flex;align-items:center;">
-    <img src="../../../static/img/10p.png" style="width:7%;position:absolute;left:1%;top:5%;" alt="10" v-show="x.goodsRegion==10?true:false" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/10p.png" style="width:7%;position:absolute;left:1%;top:5%;" alt="10" v-show="x.goodsRegion==10?true:false" />
     <img v-lazy="x.goodsIcon" alt="" />
     <div style="float:left;width:65%;margin:15px 0 10px 0;">
       <p class="jiexiaoName">
@@ -19,7 +19,7 @@
     </div>
   </div>
   <div class="jiexiaoList" v-for="x in listed" v-link="{name:'details', params:{number:x.number,from:from}}" style="display:flex;align-items:center;">
-    <img src="../../../static/img/10p.png" style="width:7%;position:absolute;left:1%;top:5%;" alt="10" v-show="x.goodsRegion==10?true:false" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/10p.png" style="width:7%;position:absolute;left:1%;top:5%;" alt="10" v-show="x.goodsRegion==10?true:false" />
     <img :src="x.goodsIcon" alt="" style="height:20%;" />
     <div style="float:left;width:65%;margin:15px 0 10px 0;">
       <p class="jiexiaoName">
@@ -89,7 +89,7 @@ export default {
     return {
       listing: '',
       listed: '',
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       from: 'goods_open_record'
     };
   },
@@ -97,7 +97,7 @@ export default {
 
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/openRecord/list', {
       params: {
         appNumber: this.appNumber,
         page: 1
@@ -139,7 +139,7 @@ export default {
     $('.content').on('scroll', function() {
       if (this.scrollTop >= (this.scrollHeight - this.clientHeight - 500)) {
         page++;
-        that.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/list', {
+        that.$http.get('http://api.ubaytop.com/platform/api/v1/goods/openRecord/list', {
           params: {
             page: page,
             appNumber: that.appNumber
@@ -176,7 +176,7 @@ export default {
           };
           for (var j in res.body.data.openingList) {
             if (res.body.data.openingList[i].userHeading === null) {
-              res.body.data.openingList[i].userHeading = '../../../static/img/zw1.png';
+              res.body.data.openingList[i].userHeading = 'http://download.dl.quzhuan.me/image/sdk/h5/zw1.png';
             };
             that.listing.push(res.body.data.openingList[j]);
           };

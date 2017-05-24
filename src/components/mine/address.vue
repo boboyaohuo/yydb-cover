@@ -1,12 +1,12 @@
 <template>
 <div class="page page-current" style="overflow:scroll;background:#FFF;">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>收货地址</h2>
-    <span style="position:absolute;right:15px;top:3px;width:24px;" @click="addd"><img src="../../../static/img/tianjia.png" style="width:20px;height:auto;" alt=""></span>
+    <span style="position:absolute;right:15px;top:3px;width:24px;" @click="addd"><img src="http://download.dl.quzhuan.me/image/sdk/h5/tianjia.png" style="width:20px;height:auto;" alt=""></span>
   </div>
   <div v-show="haveNoAdress" style="width: 218px; height: 172px; margin: 70px auto;">
-    <div><img src="../../../static/img/noAdress.png" style="width: 100%; height: 100%;"></div>
+    <div><img src="http://download.dl.quzhuan.me/image/sdk/h5/noAdress.png" style="width: 100%; height: 100%;"></div>
     <div @click="addAdress" style="width: 130px; height: 30px;line-height: 30px; font-size: 14px; text-align: center;color: white; background: #D43047; border-radius: 5px;margin: 20px auto;">
       添加地址
     </div>
@@ -53,7 +53,7 @@ import $ from 'zepto';
 export default {
   data() {
     return {
-      token: window.localStorage.getItem('token'),
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token'),
       haveNoAdress: true,
       haveAdress: false,
       defaultAdress: false,
@@ -62,15 +62,49 @@ export default {
     };
   },
   methods: {
+    getCookie: function(name) {
+      // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+      var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+      if (arr != null) {
+        return unescape(arr[2]);
+      }
+      return null;
+    },
+    setCookie: function(key, val, time) { // 设置cookie方法
+      var date = new Date(); // 获取当前时间
+      var expiresDays = time; // 将date设置为n天以后的时间
+      date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+      document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+    },
+    delCookie: function(key) {
+      var date = new Date();
+      date.setTime(date.getTime() - 10000);
+      document.cookie = key + '=v; expires =' + date.toGMTString();
+    },
     back() {
-      window.localStorage.removeItem('adid');
-      window.localStorage.removeItem('adname');
-      window.localStorage.removeItem('admobile');
-      window.localStorage.removeItem('adqq');
-      window.localStorage.removeItem('adarea');
-      window.localStorage.removeItem('adstreet');
-      // 移除后存
-      this.$router.go({path: '/mine'});
+      if (window.localStorage) {
+        window.localStorage.removeItem('adid');
+        window.localStorage.removeItem('adname');
+        window.localStorage.removeItem('admobile');
+        window.localStorage.removeItem('adqq');
+        window.localStorage.removeItem('adarea');
+        window.localStorage.removeItem('adstreet');
+        // 移除后存
+        this.$router.go({
+          path: '/mine'
+        });
+      } else {
+        this.delCookie('adid');
+        this.delCookie('adname');
+        this.delCookie('admobile');
+        this.delCookie('adqq');
+        this.delCookie('adarea');
+        this.delCookie('adstreet');
+        // 移除后存
+        this.$router.go({
+          path: '/mine'
+        });
+      }
     },
     addd() {
       // 跳转addaddress页面
@@ -85,7 +119,7 @@ export default {
     },
     setDefault(index, id) {
       $.showIndicator();
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/default/address/update', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/default/address/update', {}, {
         params: {
           token: this.token,
           addressId: id
@@ -112,7 +146,7 @@ export default {
         bold: true,
         color: 'danger',
         onClick: function() { // 删除地址操作
-          that.$http.post('http://123.59.49.17:8080/platform/api/v1/user/address/delete', {}, {
+          that.$http.post('http://api.ubaytop.com/platform/api/v1/user/address/delete', {}, {
             params: {
               token: that.token,
               addressId: id
@@ -138,26 +172,46 @@ export default {
       $.actions(groups);
     },
     editAdress(name, mobile, qq, province, city, county, street, id) {
-      window.localStorage.removeItem('adid');
-      window.localStorage.removeItem('adname');
-      window.localStorage.removeItem('admobile');
-      window.localStorage.removeItem('adqq');
-      window.localStorage.removeItem('adarea');
-      window.localStorage.removeItem('adstreet');
-      // 移除后存
-      window.localStorage.setItem('adname', name);
-      window.localStorage.setItem('adid', id);
-      window.localStorage.setItem('admobile', mobile);
-      window.localStorage.setItem('adqq', qq);
-      window.localStorage.setItem('adarea', province + ' ' + city + ' ' + county);
-      window.localStorage.setItem('adstreet', street);
-      // 跳转addaddress页面
-      this.$route.router.go({
-        path: 'addAdress'
-      });
+      if (window.localStorage) {
+        window.localStorage.removeItem('adid');
+        window.localStorage.removeItem('adname');
+        window.localStorage.removeItem('admobile');
+        window.localStorage.removeItem('adqq');
+        window.localStorage.removeItem('adarea');
+        window.localStorage.removeItem('adstreet');
+        // 移除后存
+        window.localStorage.setItem('adname', name);
+        window.localStorage.setItem('adid', id);
+        window.localStorage.setItem('admobile', mobile);
+        window.localStorage.setItem('adqq', qq);
+        window.localStorage.setItem('adarea', province + ' ' + city + ' ' + county);
+        window.localStorage.setItem('adstreet', street);
+        // 跳转addaddress页面
+        this.$route.router.go({
+          path: 'addAdress'
+        });
+      } else {
+        this.delCookie('adid');
+        this.delCookie('adname');
+        this.delCookie('admobile');
+        this.delCookie('adqq');
+        this.delCookie('adarea');
+        this.delCookie('adstreet');
+        // 移除后存
+        this.setCookie('adname', name, 1);
+        this.setCookie('adid', id, 1);
+        this.setCookie('admobile', mobile, 1);
+        this.setCookie('adqq', qq, 1);
+        this.setCookie('adarea', province + ' ' + city + ' ' + county, 1);
+        this.setCookie('adstreet', street, 1);
+        // 跳转addaddress页面
+        this.$route.router.go({
+          path: 'addAdress'
+        });
+      }
     },
     refresh() {
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/address/list', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/address/list', {}, {
         params: {
           token: this.token
         }
@@ -177,7 +231,7 @@ export default {
     }
   },
   ready() {
-    this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/address/list', {}, {
+    this.$http.post('http://api.ubaytop.com/platform/api/v1/user/address/list', {}, {
       params: {
         token: this.token
       }

@@ -1,80 +1,78 @@
 <template>
-  <div class="page page-current" style="overflow:scroll;padding:0;">
-    <div class="header">
-      <img src="../../../static/img/back.png" alt="" @click="back" />
-      <h2>参与详情</h2>
+<div class="page page-current" style="overflow:scroll;padding:0;">
+  <div class="header">
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
+    <h2>参与详情</h2>
+  </div>
+  <div class="content" style="padding-top:44px;">
+    <div class="rdheader">
+      <p>
+        {{goods.goodsName}}
+      </p>
+      <p>
+        本期参与：
+        <span style="color:#008AFF">10</span>人次
+      </p>
+      <p>
+        期号：
+        <span style="color:#008AFF">{{goods.periods}}</span>
+      </p>
     </div>
-    <div class="content" style="padding-top:44px;">
-      <div class="rdheader">
-        <p>
-          {{goods.goodsName}}
-        </p>
-        <p>
-          本期参与：
-          <span style="color:#008AFF">10</span>人次
-        </p>
-        <p>
-          期号：
-          <span style="color:#008AFF">{{goods.periods}}</span>
-        </p>
-      </div>
-      <div class="rdlist">
-        <p style="font-size:14px;">
-          以下是我的夺宝记录
-        </p>
-        <p style="text-align:center;font-size:12px;overflow:hidden;line-height:28px;">
-          <span style="float:left;margin-left:15px;">参与时间</span>
-          <span>参与人次</span>
-          <span style="float:right;margin-right:18px;">参与号码</span>
-        </p>
-        <p style="text-align:center;font-size:12px;overflow:hidden;line-height:30px;position:relative;" v-for="x in list" v-link="{name: 'canyuNum', params: {number: x.id}}">
-          <span style="position:absolute;left:15px;">{{x.time}}</span>
-          <span style="color:#008AFF;">{{x.buyCount}}</span>
-          <span style="position:absolute;right:30px;color:#D43047;">查看</span>
-        </p>
-      </div>
+    <div class="rdlist">
+      <p style="font-size:14px;">
+        以下是我的夺宝记录
+      </p>
+      <p style="text-align:center;font-size:12px;overflow:hidden;line-height:28px;">
+        <span style="float:left;margin-left:15px;">参与时间</span>
+        <span>参与人次</span>
+        <span style="float:right;margin-right:18px;">参与号码</span>
+      </p>
+      <p style="text-align:center;font-size:12px;overflow:hidden;line-height:30px;position:relative;" v-for="x in list" v-link="{name: 'canyuNum', params: {number: x.id}}">
+        <span style="position:absolute;left:15px;">{{x.time}}</span>
+        <span style="color:#008AFF;">{{x.buyCount}}</span>
+        <span style="position:absolute;right:30px;color:#D43047;">查看</span>
+      </p>
     </div>
   </div>
+</div>
 </template>
 
 <style>
-
-.rdheader{
+.rdheader {
   width: 100%;
   background: #F7F7F7;
   padding: 10px;
 }
 
-.rdheader p:nth-child(1){
+.rdheader p:nth-child(1) {
   width: 100%;
   font-size: 16px;
-  color:#7777770;
+  color: #7777770;
   line-height: 26px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-.rdheader p:nth-child(2){
+.rdheader p:nth-child(2) {
   font-size: 12px;
-  color:#7777770;
+  color: #7777770;
   line-height: 24px;
 }
 
-.rdheader p:nth-child(3){
+.rdheader p:nth-child(3) {
   font-size: 12px;
-  color:#7777770;
+  color: #7777770;
   line-height: 24px;
 }
 
-.rdlist{
+.rdlist {
   width: 100%;
 }
 
-.rdlist>p:nth-child(1){
+.rdlist>p:nth-child(1) {
   color: #777777;
   text-align: center;
-
 }
 </style>
 
@@ -82,12 +80,20 @@
 export default {
   data() {
     return {
-      token: window.localStorage.getItem('token'),
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token'),
       goods: '',
       list: ''
     };
   },
   methods: {
+    getCookie: function(name) {
+      // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+      var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+      if (arr != null) {
+        return unescape(arr[2]);
+      }
+      return null;
+    },
     back: function() {
       window.history.go(-1);
     }
@@ -95,7 +101,7 @@ export default {
   ready() {
     var url = window.location.hash;
     this.urlNum = url.substring(url.lastIndexOf('/') + 1);
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/order/detail', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/order/detail', {
       params: {
         goodsReleaseNum: this.urlNum,
         token: this.token

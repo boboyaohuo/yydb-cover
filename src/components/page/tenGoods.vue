@@ -1,12 +1,12 @@
 <template>
 <div class="page page-current">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" v-link="{path: '/home'}" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" v-link="{path: '/home'}" />
     <h2>十元专区</h2>
   </div>
   <div class="content" style="margin-top:44px;">
     <div class="none" v-show="show">
-      <img src="../../../static/img/bgNolist.png" alt="" />
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/bgNolist.png" alt="" />
       <p style="margin-top:20px;">
         没有商品哦！
       </p>
@@ -15,7 +15,7 @@
       <ul>
         <li v-for="x in goods" class="goods_item" style="display:flex; padding:5px 0;border-bottom:1px solid #EEE;position:relative;">
           <div style=" width:10% ;flex: 0 0 28%;" v-link="{name:'details', params:{number:x.number,from:from}}">
-            <img src="../../../static/img/10p.png" alt="10" style="width:20px;position:absolute;top:10px;left:10px;" v-show="x.region==10?true:false" />
+            <img src="http://download.dl.quzhuan.me/image/sdk/h5/10p.png" alt="10" style="width:20px;position:absolute;top:10px;left:10px;" v-show="x.region==10?true:false" />
             <img :src="x.goodsIcon" alt="" style="width:80%;height: auto;margin-left:10%;" />
           </div>
           <div style=" flex:0 0 80%">
@@ -92,7 +92,7 @@ export default {
 			tenB: false, // 是否为十元商品
 			currentPay: 5, // 当前购买数量
 			currentNumber: '', // 当前商品id
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
 			currentRegion: '', // 当前价格区域
 			currentUse: '', // 当前可购买人次
 			currentAll: '', // 当前总人次
@@ -101,6 +101,25 @@ export default {
     };
   },
   methods: {
+    getCookie: function(name) {
+     // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+     var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+     if (arr != null) {
+       return unescape(arr[2]);
+     }
+     return null;
+   },
+   setCookie: function(key, val, time) { // 设置cookie方法
+     var date = new Date(); // 获取当前时间
+     var expiresDays = time; // 将date设置为n天以后的时间
+     date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+     document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+   },
+   delCookie: function(key) {
+     var date = new Date();
+     date.setTime(date.getTime() - 10000);
+     document.cookie = key + '=v; expires =' + date.toGMTString();
+   },
     // 弹出购买模态
 		purchase: function(goodsName, region, usableStock, totalStock, number) {
 			this.currentRegion = region;
@@ -134,8 +153,13 @@ export default {
 				this.$router.app.allPay = this.currentPay * this.currentRegion;
 				this.$router.app.goodsNumber = this.currentNumber;
 				this.$router.app.buyCount = this.currentPay;
-        window.localStorage.setItem('goodName', this.currentName);
-        window.localStorage.setItem('renci', this.currentPay);
+        if (window.localStorage) {
+          window.localStorage.setItem('goodName', this.currentName);
+          window.localStorage.setItem('renci', this.currentPay);
+        } else {
+          this.setCookie('goodName', this.currentName, 24);
+          this.setCookie('renci', this.currentPay, 24);
+        }
 				this.modalIsShow = false;
 				this.currentPay = 5;
 				this.$router.app.isIndex = true;
@@ -244,7 +268,7 @@ export default {
 		}
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/release/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/release/list', {
       params: {
         appNumber: this.appNumber,
         type: '2',
@@ -263,7 +287,7 @@ export default {
     // var page = 1;
     // $('.content').on('scroll', function() {
     //   if (this.scrollTop >= (this.scrollHeight - this.clientHeight - 500)) {
-    //     that.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/release/list', {
+    //     that.$http.get('http://api.ubaytop.com/platform/api/v1/goods/release/list', {
     //       params: {
     //         appNumber: that.appNumber,
     //         type: '2',

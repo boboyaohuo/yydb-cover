@@ -12,10 +12,10 @@
         <div v-show='codeT' style="color:#008AFF;font-size:14px;position:absolute;right:5%;top:100px;">
           发送成功
         </div>
-        <img src="../../../static/img/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
-        <img src="../../../static/img/lr_yzm.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
-        <img src="../../../static/img/lr_yzm.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
-        <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:142px;left:10%;" alt="">
+        <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
+        <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_yzm.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
+        <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_yzm.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
+        <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:142px;left:10%;" alt="">
         <div style="width:90%;margin-left:5%;text-indent:15%;line-height:36px;font-size:14px;color:#CCCCCC;border-bottom:1px solid #EEEEEE;">
           <input type="text" v-model="fo_phone" placeholder="请输入手机号">
         </div>
@@ -50,7 +50,7 @@ export default {
       fo_phone: '',
       fo_code: '',
       fo_pass: '',
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       codeT: false,
       codeS: true,
       time: '60',
@@ -62,6 +62,25 @@ export default {
     back() {
       window.history.go(-1);
     },
+    getCookie: function(name) {
+     // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+     var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+     if (arr != null) {
+       return unescape(arr[2]);
+     }
+     return null;
+   },
+   setCookie: function(key, val, time) { // 设置cookie方法
+     var date = new Date(); // 获取当前时间
+     var expiresDays = time; // 将date设置为n天以后的时间
+     date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+     document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+   },
+   delCookie: function(key) {
+     var date = new Date();
+     date.setTime(date.getTime() - 10000);
+     document.cookie = key + '=v; expires =' + date.toGMTString();
+   },
     sendCode() {
       if (this.fo_phone === '') {
         $.alert('请填写电话号码');
@@ -75,7 +94,7 @@ export default {
       this.codeT = true;
       this.codeS = false;
       //  console.log('res');
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/message/send/verifyCode', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/message/send/verifyCode', {}, {
         params: {
           mobile: this.fo_phone,
           fileName: this.fileName,
@@ -122,7 +141,7 @@ export default {
         return;
       };
       //  console.log('res');
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/reset/password', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/reset/password', {}, {
         params: {
           mobile: this.fo_phone,
           password: md5(this.fo_pass),
@@ -142,7 +161,7 @@ export default {
         });
     },
     huanyizhang() {
-        this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+        this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
             this.img = 'data:image/png;base64,' + res.body.data.file;
             this.fileName = res.body.data.validateCode;
             console.log(this.fileName);
@@ -150,7 +169,7 @@ export default {
     }
   },
   ready() {
-      this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+      this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
           console.log(res);
           this.img = 'data:image/png;base64,' + res.body.data.file;
           this.fileName = res.body.data.validateCode;

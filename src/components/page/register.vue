@@ -15,12 +15,12 @@
       <div v-show='codeT' style="color:#008AFF;font-size:14px;position:absolute;right:5%;top:146px;">
         {{time}}后重新发送
       </div>
-      <img src="../../../static/img/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
-      <img src="../../../static/img/lr_yzm.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
-      <img src="../../../static/img/lr_yzm.png" style="position:absolute;width:28px;top:142px;left:10%;" alt="">
-      <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
-      <!-- <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:96px;left:10%;" alt=""> -->
-      <!-- <img src="../../../static/img/lr_name.png" style="position:absolute;width:28px;top:4px;left:10%;" alt=""> -->
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_yzm.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_yzm.png" style="position:absolute;width:28px;top:142px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
+      <!-- <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:96px;left:10%;" alt=""> -->
+      <!-- <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_name.png" style="position:absolute;width:28px;top:4px;left:10%;" alt=""> -->
 
       <div style="width:90%;margin-left:5%;margin-top:10px;text-indent:15%;line-height:36px;font-size:14px;color:#CCCCCC;border-bottom:1px solid #EEEEEE;">
         <input type="text" v-model="re_phone" placeholder="请输入手机号">
@@ -62,7 +62,7 @@ export default {
       re_code1: '',
       re_pass: '',
     //  re_name: '',
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       codeT: false,
       codeS: true,
       time: '60',
@@ -85,7 +85,7 @@ export default {
         return;
       };
       //  console.log('res');
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/message/send/verifyCode', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/message/send/verifyCode', {}, {
         params: {
           mobile: this.re_phone,
           fileName: this.fileName,
@@ -145,7 +145,7 @@ export default {
         return;
       };
       //  console.log('res');
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/register/platform/wap', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/register/platform/wap', {}, {
         params: {
           // name: this.re_name,
           mobile: this.re_phone,
@@ -169,7 +169,7 @@ export default {
         });
     },
     huanyizhang() {
-        this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+        this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
             this.img = 'data:image/png;base64,' + res.body.data.file;
             this.fileName = res.body.data.validateCode;
             console.log(this.fileName);
@@ -177,7 +177,7 @@ export default {
     }
   },
   ready() {
-      this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+      this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
           console.log(res);
           this.img = 'data:image/png;base64,' + res.body.data.file;
           this.fileName = res.body.data.validateCode;

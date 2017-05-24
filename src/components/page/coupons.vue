@@ -61,16 +61,17 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
- .quler p {
-   /*line-height: 2;*/
-   width: 100px;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   word-break: break-all;
-   display: -webkit-box;
-   -webkit-line-clamp: 1;
-   -webkit-box-orient: vertical;
- }
+
+.quler p {
+  /*line-height: 2;*/
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
 
 .qulef2 {
   color: #848484;
@@ -94,7 +95,7 @@
 <template>
 <div class="page page-current content" style="overflow:scroll;padding:0;">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>请选择选择优惠券</h2>
   </div>
   <div class='youhuiquan1'>
@@ -123,17 +124,41 @@ export default {
   data() {
     return {
       qunList: [],
-      token: window.localStorage.getItem('token')
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token')
     };
   },
   methods: {
     back() {
       window.history.go(-1);
     },
+    getCookie: function(name) {
+      // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+      var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+      if (arr != null) {
+        return unescape(arr[2]);
+      }
+      return null;
+    },
+    setCookie: function(key, val, time) { // 设置cookie方法
+      var date = new Date(); // 获取当前时间
+      var expiresDays = time; // 将date设置为n天以后的时间
+      date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+      document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+    },
+    delCookie: function(key) {
+      var date = new Date();
+      date.setTime(date.getTime() - 10000);
+      document.cookie = key + '=v; expires =' + date.toGMTString();
+    },
     choosed(id, amount) {
-      //  $.alert(id);
-      window.localStorage.setItem('coupons', id + ',' + amount);
-       window.history.go(-1);
+      if (window.localStorage) {
+        //  $.alert(id);
+        window.localStorage.setItem('coupons', id + ',' + amount);
+        window.history.go(-1);
+      } else {
+        this.setCookie('coupons', id + ',' + amount, 24);
+        window.history.go(-1);
+      }
     },
     formTime(ttt) {
       var time = new Date(ttt);
@@ -162,7 +187,7 @@ export default {
     }
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/pay/get/coupons', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/pay/get/coupons', {
       params: {
         // name: this.re_name,
         buyCount: this.$route.params.count,

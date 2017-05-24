@@ -1,12 +1,12 @@
 <template>
 <div class="page page-current" style="overflow:scroll;padding:0;">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>夺宝记录</h2>
   </div>
   <div class="content" style="padding-bottom:0;">
     <div class="none" v-show="show?false:true">
-      <img src="../../../static/img/bgNolist.png" alt="" />
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/bgNolist.png" alt="" />
       <p style="margin-top:20px;">
         您还没有夺宝记录哦
       </p>
@@ -18,7 +18,7 @@
     </div>
     <div v-if="show">
       <div class="list" v-for="x in recordList" v-link="{name:'details', params:{number:x.goodsReleaseNumber,from:from}}" style="display:flex;align-items:center;">
-        <img src="../../../static/img/zhongjiang.png" alt="" class="zhongjiang" v-if="x.luckStatus==1?true:false" />
+        <img src="http://download.dl.quzhuan.me/image/sdk/h5/zhongjiang.png" alt="" class="zhongjiang" v-if="x.luckStatus==1?true:false" />
         <div class="img">
           <img :src="x.goodsIcon" alt="" />
         </div>
@@ -79,7 +79,7 @@ import $ from 'zepto';
 export default {
   data() {
     return {
-      token: window.localStorage.getItem('token'),
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token'),
       recordList: '',
       show: true,
       from: 'goods_open_record',
@@ -87,12 +87,31 @@ export default {
     };
   },
   methods: {
+    getCookie: function(name) {
+     // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+     var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+     if (arr != null) {
+       return unescape(arr[2]);
+     }
+     return null;
+   },
+   setCookie: function(key, val, time) { // 设置cookie方法
+     var date = new Date(); // 获取当前时间
+     var expiresDays = time; // 将date设置为n天以后的时间
+     date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+     document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+   },
+   delCookie: function(key) {
+     var date = new Date();
+     date.setTime(date.getTime() - 10000);
+     document.cookie = key + '=v; expires =' + date.toGMTString();
+   },
     back: function() {
       window.history.go(-1);
     }
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/order/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/order/list', {
       params: {
         token: this.token,
         status: '0',
@@ -141,7 +160,7 @@ export default {
     $('.content').on('scroll', function() {
       if (this.scrollTop >= (this.scrollHeight - this.clientHeight - 500)) {
         page++;
-        that.$http.get('http://123.59.49.17:8080/platform/api/v1/order/list', {
+        that.$http.get('http://api.ubaytop.com/platform/api/v1/order/list', {
           params: {
             token: this.token,
             status: '0',

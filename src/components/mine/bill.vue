@@ -76,7 +76,7 @@
 <template>
 <div class="page page-current content" style="overflow:scroll;padding:0;">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>我的优惠券</h2>
   </div>
   <div class="quan_bar" style="margin-top:44px;background:#f7f7f7;height:35px;display:flex;">
@@ -96,7 +96,7 @@
         <p>{{x.remark? x.remark : '全场通用'}}</p>
         <p>{{x.startTime1+'-'+x.endTime}}</p>
       </div>
-      <div class="quler"  style="float:right;">
+      <div class="quler" style="float:right;">
         <p>
           <span style="color:#d43047;font-size:20px;">￥<span>  <span style="color:#d43047;font-size:40px;">{{x.amount}}</span>
         </p>
@@ -122,13 +122,21 @@ export default {
       num_use: '0',
       nowTime: '',
       isqulef: false,
-      token: window.localStorage.getItem('token'),
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token'),
       qunList: []
     };
   },
   methods: {
     back() {
       window.history.go(-1);
+    },
+    getCookie: function(name) {
+      // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+      var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+      if (arr != null) {
+        return unescape(arr[2]);
+      }
+      return null;
     },
     tabNuse(stat) {
       if (stat === 1) {
@@ -140,7 +148,7 @@ export default {
         this.isUse = true;
         this.isqulef = true;
       }
-      this.$http.get('http://123.59.49.17:8080/platform/api/v1/activity/user/coupon/list', {
+      this.$http.get('http://api.ubaytop.com/platform/api/v1/activity/user/coupon/list', {
         params: {
           // name: this.re_name,
           status: stat,
@@ -154,7 +162,7 @@ export default {
             this.havequan = false;
             this.noquan = true;
           } else {
-              this.nowTime = res.body.data.time;
+            this.nowTime = res.body.data.time;
             this.qunList = res.body.data.coupons;
             //    this.num_nouse = res.body.data.coupons.length;
             this.havequan = true;
@@ -201,7 +209,7 @@ export default {
     }
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/activity/user/coupon/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/activity/user/coupon/list', {
       params: {
         // name: this.re_name,
         status: '1',
@@ -234,7 +242,7 @@ export default {
           // $.toast('注册失败，请稍后重试');
         }
       });
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/activity/user/coupon/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/activity/user/coupon/list', {
       params: {
         // name: this.re_name,
         status: '2',

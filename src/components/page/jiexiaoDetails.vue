@@ -1,7 +1,7 @@
 <template>
   <div class="page page-current content" style="overflow:scroll;padding:0;">
     <div class="header">
-      <img src="../../../static/img/back.png" alt="" @click="back" />
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
       <h2>往期揭晓</h2>
     </div>
     <div style="height:44px;">
@@ -39,11 +39,30 @@ export default {
   data() {
     return {
       user: '',
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       from: 'goods_open_record'
     };
   },
   methods: {
+    getCookie: function(name) {
+     // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+     var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+     if (arr != null) {
+       return unescape(arr[2]);
+     }
+     return null;
+   },
+   setCookie: function(key, val, time) { // 设置cookie方法
+     var date = new Date(); // 获取当前时间
+     var expiresDays = time; // 将date设置为n天以后的时间
+     date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+     document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+   },
+   delCookie: function(key) {
+     var date = new Date();
+     date.setTime(date.getTime() - 10000);
+     document.cookie = key + '=v; expires =' + date.toGMTString();
+   },
     back: function() {
       window.history.go(-1);
     }
@@ -51,7 +70,7 @@ export default {
   ready() {
     var url = window.location.hash;
     this.urlNum = url.substring(url.lastIndexOf('/') + 1);
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/openRecord/list', {
       params: {
         goodsNum: this.urlNum,
         appNumber: this.appNumber,
@@ -94,7 +113,7 @@ export default {
     $('.content').on('scroll', function() {
       if (this.scrollTop >= (this.scrollHeight - this.clientHeight - 500)) {
         page++;
-        that.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/list', {
+        that.$http.get('http://api.ubaytop.com/platform/api/v1/goods/openRecord/list', {
           params: {
             goodsNum: that.urlNum,
             appNumber: this.appNumber,

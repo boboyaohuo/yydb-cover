@@ -1,7 +1,7 @@
 <template>
 <div class="page page-current content" style="overflow:scroll;padding:0;">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>中奖详情</h2>
   </div>
   <div style="height:44px;">
@@ -38,25 +38,25 @@
   </div>
   <div style="background-color:#ffffff; padding: 7px 0 ;font-size:14px; ">
     <div style="color: #777777; height: 29px; line-height:29px;display:flex;">
-      <img src="../../../static/img/3@2x.png" style="width: 10px;height: 29px; margin-left: 20px;">商品中奖
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/3@2x.png" style="width: 10px;height: 29px; margin-left: 20px;">商品中奖
       <span style="margin-left:10px;">{{goods.opentime}}</span></div>
     <div style="color: #777777;height: 29px; line-height:29px;display:flex;" :style="goods.isDeliver==1?{color:'#d43047'}:none">
-      <img src="../../../static/img/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==1?false:true">
-      <img src="../../../static/img/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==1?true:false"> 确认地址
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==1?false:true">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==1?true:false"> 确认地址
       <span style="color:#d43047;margin-left:10px;" v-if="goods.isDeliver==1?true:false">待确认</span>
     </div>
     <div style="color: #777777;height: 29px; line-height:29px;display:flex;" :style="goods.isDeliver==2?{color:'#d43047'}:none">
-      <img src="../../../static/img/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==2?false:true">
-      <img src="../../../static/img/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==2?true:false"> 等待发货
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==2?false:true">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==2?true:false"> 等待发货
     </div>
     <div style="color: #777777;height: 29px; line-height:29px;display:flex;" :style="goods.isDeliver==3?{color:'#d43047'}:none">
-      <img src="../../../static/img/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==3?false:true">
-      <img src="../../../static/img/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==3?true:false"> 等待收货
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/1@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==3?false:true">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/2@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==3?true:false"> 等待收货
       <span style="color:#d43047;margin-left:10px;" v-if="goods.isDeliver==3?true:false">待确认</span>
     </div>
     <div style="color: #777777;height: 29px; line-height:29px;display:flex;" :style="goods.isDeliver==4?{color:'#d43047'}:none">
-      <img src="../../../static/img/5@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==4?false:true">
-      <img src="../../../static/img/6@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==4?true:false"> 已签收
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/5@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==4?false:true">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/6@2x.png" style="width: 10px;height: 29px; margin-left: 20px;" v-if="goods.isDeliver==4?true:false"> 已签收
     </div>
   </div>
   <div style="clear: both">
@@ -77,25 +77,44 @@ import $ from 'zepto';
 export default {
   data() {
     return {
-      token: window.localStorage.getItem('token'),
+      token: window.localStorage ? window.localStorage.getItem('token') : this.getCookie('token'),
       urlNum: '',
       goods: ''
     };
   },
   methods: {
+    getCookie: function(name) {
+     // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+     var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+     if (arr != null) {
+       return unescape(arr[2]);
+     }
+     return null;
+   },
+   setCookie: function(key, val, time) { // 设置cookie方法
+     var date = new Date(); // 获取当前时间
+     var expiresDays = time; // 将date设置为n天以后的时间
+     date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+     document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+   },
+   delCookie: function(key) {
+     var date = new Date();
+     date.setTime(date.getTime() - 10000);
+     document.cookie = key + '=v; expires =' + date.toGMTString();
+   },
     back: function() {
       window.history.go(-1);
     },
     querendizhi: function() {
       if (this.goods.address && this.goods.mobile && this.goods.userName) {
-        this.$http.post('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/address', {}, {
+        this.$http.post('http://api.ubaytop.com/platform/api/v1/goods/openRecord/address', {}, {
           params: {
             number: this.urlNum,
             token: this.token
           }
         }).then(function(res) {
           $.toast('已确认收货地址');
-          this.$http.post('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/detail', {}, {
+          this.$http.post('http://api.ubaytop.com/platform/api/v1/goods/openRecord/detail', {}, {
             params: {
               token: this.token,
               number: this.urlNum
@@ -132,14 +151,14 @@ export default {
       };
     },
     querenshouhuo: function() {
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/goods/receive', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/goods/receive', {}, {
         params: {
           number: this.urlNum,
           token: this.token
         }
       }).then(function(res) {
         $.toast('已确认收货');
-        this.$http.post('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/detail', {}, {
+        this.$http.post('http://api.ubaytop.com/platform/api/v1/goods/openRecord/detail', {}, {
           params: {
             token: this.token,
             number: this.urlNum
@@ -177,7 +196,7 @@ export default {
     var url = window.location.hash;
     this.urlNum = url.substring(url.lastIndexOf('/') + 1);
     console.log(this.urlNum);
-    this.$http.post('http://123.59.49.17:8080/platform/api/v1/goods/openRecord/detail', {}, {
+    this.$http.post('http://api.ubaytop.com/platform/api/v1/goods/openRecord/detail', {}, {
       params: {
         token: this.token,
         number: this.urlNum

@@ -1,7 +1,7 @@
 <template>
 <div class="page page-current">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>计算详情</h2>
   </div>
   <div class="content" style="overflow-y:auto;">
@@ -105,7 +105,7 @@ export default {
   ready() {
     var url = window.location.hash;
     this.urlNum = url.substring(url.lastIndexOf('/') + 1);
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/open/detail', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/open/detail', {
       params: {
         number: this.urlNum
       }

@@ -9,10 +9,10 @@
       </ul>
     </div>
     <div class="goods_wrapper">
-      <ul style="padding-left:5px;">
+      <ul style="padding-left:5px;overflow: hidden;">
         <li v-for="x in goods" class="goods_item" style="display:flex; padding:2% 0 0 0 ;border-bottom:1px solid #EEEEEE;" >
           <div style=" width:10% ;flex: 0 0 28%;position:relative;margin-left:4%;margin-right:4%;" v-link="{name:'details', params:{number:x.number,from:from}}">
-            <img src="../../../static/img/10p.png" alt="" style="width:25px;position:absolute;" v-show="x.region==10?true:false">
+            <img src="http://download.dl.quzhuan.me/image/sdk/h5/10p.png" alt="" style="width:25px;position:absolute;" v-show="x.region==10?true:false">
             <img :src="x.goodsIcon" alt="" style="width:100%;height: auto" />
           </div>
           <div style=" flex:0 0 70%">
@@ -96,7 +96,7 @@ export default {
 			currentAll: '', // 当前总人次
       currentName: '', // 当前商品名称
 			probability: '', // 中奖概率
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       currentId: '0' // 当前ID
     };
   },
@@ -106,7 +106,7 @@ export default {
       this.currentIndex = index;
       this.currentId = sortId;
       // 获取数据
-      this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/release/list', {
+      this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/release/list', {
         params: {
           appNumber: this.appNumber,
           type: '1',
@@ -151,8 +151,13 @@ export default {
 			this.$router.app.allPay = this.currentPay * this.currentRegion;
 			this.$router.app.goodsNumber = this.currentNumber;
 			this.$router.app.buyCount = this.currentPay;
-      window.localStorage.setItem('goodName', this.currentName);
-      window.localStorage.setItem('renci', this.currentPay);
+      if (window.localStorage) {
+        window.localStorage.setItem('goodName', this.currentName);
+        window.localStorage.setItem('renci', this.currentPay);
+      } else {
+        this.setCookie('goodName', this.currentName, 24);
+        this.setCookie('renci', this.currentPay, 24);
+      }
 			this.modalIsShow = false;
 			this.currentPay = 5;
 			this.$router.app.isIndex = true;
@@ -255,13 +260,13 @@ export default {
 		}
 	},
   created() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/category/list').then(
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/category/list').then(
       function(res) {
         this.$set('goodsMenu', res.body.data.list);
       }
     );
     // 获取数据
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/release/list', {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/goods/release/list', {
       params: {
         appNumber: this.appNumber,
         type: '1',
@@ -281,7 +286,7 @@ export default {
       if (this.scrollTop >= (this.scrollHeight - this.clientHeight - 300)) {
         console.log(that.currentId);
         page++;
-        that.$http.get('http://123.59.49.17:8080/platform/api/v1/goods/release/list', {
+        that.$http.get('http://api.ubaytop.com/platform/api/v1/goods/release/list', {
           params: {
           appNumber: that.appNumber,
             type: '1',

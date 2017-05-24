@@ -1,7 +1,7 @@
 <template>
 <div class="page page-current">
   <div class="header">
-    <img src="../../../static/img/back.png" alt="" @click="back" />
+    <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" @click="back" />
     <h2>帮助中心</h2>
   </div>
   <div class="content" style="background:#eeeeee;padding-top:44px;">

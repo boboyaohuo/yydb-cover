@@ -1,7 +1,7 @@
 <template>
   <div class="page page-current content" style="overflow:scroll;padding:0;">
     <div class="header">
-      <img src="../../../static/img/back.png" alt="" v-link="{path:'/home'}"/>
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/back.png" alt="" v-link="{path:'/home'}"/>
       <h2>支付结果</h2>
     </div>
 
@@ -41,7 +41,7 @@ export default {
   havePay: function() {
   if (this.payWay === '1') {
   // 微信支付
-       this.$http.post('http://123.59.49.17:8080/platform/api/v1/pay/ipaynow/check/status', {}, {
+       this.$http.post('http://api.ubaytop.com/platform/api/v1/pay/ipaynow/check/status', {}, {
           params: {
             orderNum: this.orderNum,
             token: this.token
@@ -59,7 +59,7 @@ export default {
   if (this.payWay === '2') {
   // 支付宝支付
   console.log(this.payWay);
-       this.$http.post('http://123.59.49.17:8080/platform/api/v1/pay/wlt/check/status', {}, {
+       this.$http.post('http://api.ubaytop.com/platform/api/v1/pay/wlt/check/status', {}, {
           params: {
             orderNum: this.orderNum,
             token: this.token

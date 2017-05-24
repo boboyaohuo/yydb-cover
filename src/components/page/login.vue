@@ -16,8 +16,6 @@
     <div style="width:100%;">
       <img src="http://download.dl.quzhuan.me/image/sdk/h5/touxiang.png" alt="" style="margin:10% 40% 30% 40%;width:20%;">
     </div>
-
-
     <div style="position:relative;" v-if="!yi">
       <div v-show='codeS' @click='sendCode' style="color:#008AFF;font-size:14px;position:absolute;right:5%;top:100px;">
         发送验证码
@@ -25,9 +23,9 @@
       <div v-show='codeT' style="color:#008AFF;font-size:14px;position:absolute;right:5%;top:100px;">
         {{time}}后重新发送
       </div>
-      <img src="../../../static/img/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
-      <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
-      <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:96px;left:10%;" alt="">
 
       <div style="width:90%;margin-left:5%;text-indent:20%;line-height:36px;font-size:14px;color:#CCCCCC;border-bottom:1px solid #EEEEEE;">
         <input type="text" v-model="l_name" placeholder="请输入手机号">
@@ -50,8 +48,8 @@
 
 
     <div style="position:relative;" v-if="yi">
-      <img src="../../../static/img/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
-      <img src="../../../static/img/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_phone.png" style="position:absolute;width:28px;top:4px;left:10%;" alt="">
+      <img src="http://download.dl.quzhuan.me/image/sdk/h5/lr_mima.png" style="position:absolute;width:28px;top:50px;left:10%;" alt="">
       <div style="width:90%;margin-left:5%;text-indent:20%;line-height:36px;font-size:14px;color:#CCCCCC;border-bottom:1px solid #EEEEEE;">
         <input type="text" v-model="lg_name" placeholder="请输入手机号或用户名">
       </div>
@@ -87,7 +85,7 @@ export default {
       l_name: '',
       l_code: '',
       l_pass: '',
-      appNumber: window.localStorage.getItem('appNumber'),
+      appNumber: this.$route.query.appNumber,
       codeT: false,
       codeS: true,
       time: '60',
@@ -97,6 +95,25 @@ export default {
     };
   },
   methods: {
+    getCookie: function(name) {
+      // (^| )name=([^;]*)(;|$),match[0]为与整个正则表达式匹配的字符串，match[i]为正则表达式捕获数组相匹配的数组；
+      var arr = document.cookie.match(new RegExp('(^| )' + name + '=([^;]*)(;|$)'));
+      if (arr != null) {
+        return unescape(arr[2]);
+      }
+      return null;
+    },
+    setCookie: function(key, val, time) { // 设置cookie方法
+      var date = new Date(); // 获取当前时间
+      var expiresDays = time; // 将date设置为n天以后的时间
+      date.setTime(date.getTime() + expiresDays * 24 * 3600 * 1000); // 格式化为cookie识别的时间
+      document.cookie = key + '=' + val + ';expires=' + date.toGMTString(); // 设置cookie
+    },
+    delCookie: function(key) {
+      var date = new Date();
+      date.setTime(date.getTime() - 10000);
+      document.cookie = key + '=v; expires =' + date.toGMTString();
+    },
     toRe() {
       this.$route.router.go({
         path: 'register'
@@ -109,7 +126,7 @@ export default {
     },
     tologin() {
       console.log('res');
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/login/platform/wap', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/login/platform/wap', {}, {
         params: {
           name: this.lg_name,
           password: md5(this.lg_pass),
@@ -133,11 +150,19 @@ export default {
           console.log(res);
           if (res.body.code === 0) {
             $.toast('恭喜您！登录成功');
-            window.localStorage.setItem('token', res.body.data.token);
-            // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
-            this.$route.router.go({
-              path: 'home'
-            });
+            if (window.localStorage) {
+              window.localStorage.setItem('token', res.body.data.token);
+              // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
+              this.$route.router.go({
+                path: 'home'
+              });
+            } else {
+              this.setCookie('token', res.body.data.token, 24);
+              // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
+              this.$route.router.go({
+                path: 'home'
+              });
+            }
           } else {
             $.toast(res.body.msg);
           }
@@ -153,7 +178,7 @@ export default {
         $.alert('请输入11位手机号码');
         return;
       };
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/message/send/verifyCode', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/message/send/verifyCode', {}, {
         params: {
           mobile: this.l_name,
           fileName: this.fileName,
@@ -182,7 +207,7 @@ export default {
         });
     },
     tol() {
-      this.$http.post('http://123.59.49.17:8080/platform/api/v1/user/simple/login/platform/wap', {}, {
+      this.$http.post('http://api.ubaytop.com/platform/api/v1/user/simple/login/platform/wap', {}, {
         params: {
           mobile: this.l_name,
           code: this.l_pass,
@@ -206,32 +231,40 @@ export default {
           console.log(res);
           if (res.body.code === 0) {
             $.toast('恭喜您！登录成功');
-            window.localStorage.setItem('token', res.body.data.token);
-            // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
-            this.$route.router.go({
-              path: 'home'
-            });
+            if (window.localStorage) {
+              window.localStorage.setItem('token', res.body.data.token);
+              // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
+              this.$route.router.go({
+                path: 'home'
+              });
+            } else {
+              this.setCookie('token', res.body.data.token, 24);
+              // 存入local里面的token；然后可以跳转到 个人中心页面了哈哈哈
+              this.$route.router.go({
+                path: 'home'
+              });
+            }
           } else {
             $.toast(res.body.msg);
           }
         });
     },
     huanyizhang() {
-      this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+      this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
         this.img = 'data:image/png;base64,' + res.body.data.file;
         this.fileName = res.body.data.validateCode;
         console.log(this.fileName);
       });
     },
     yanzhengma() {
-        this.yi = false;
+      this.yi = false;
     },
     zhanghao() {
-        this.yi = true;
+      this.yi = true;
     }
   },
   ready() {
-    this.$http.get('http://123.59.49.17:8080/platform/api/v1/message/validateCode').then(function(res) {
+    this.$http.get('http://api.ubaytop.com/platform/api/v1/message/validateCode').then(function(res) {
       console.log(res);
       this.img = 'data:image/png;base64,' + res.body.data.file;
       this.fileName = res.body.data.validateCode;
